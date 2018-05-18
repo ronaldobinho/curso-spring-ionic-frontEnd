@@ -24,10 +24,8 @@ export class ProfilePage {
   constructor(public navCtrl: NavController, 
     public navParams: NavParams, 
     public storage: StorageService,
-  public clienteService : ClienteService
-)
- {
-  }
+  public clienteService : ClienteService)
+ {  }
 
   ionViewDidLoad() {
      let localUser = this.storage.getLocalUser();
@@ -36,9 +34,17 @@ export class ProfilePage {
       subscribe(response => {
         this.cliente = response;
        this.getImageIfExists();
-      }
-    ),
-        error => ({});
+      
+      },
+        error => {
+          if (error.status == 403){
+            this.navCtrl.setRoot('HomePage');
+          }
+        });
+       }
+       else {
+         this.navCtrl.setRoot('HomePage');
+      
        }
   }
   getImageIfExists() {

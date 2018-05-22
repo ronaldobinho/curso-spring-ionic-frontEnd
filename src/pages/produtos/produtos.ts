@@ -40,7 +40,7 @@ loadImageUrls() {
          error => {});
      }
     }
-    showDetails(){
-      this.navCtrl.push("ProdutoDetailPage");
+    showDetails(produto_id){
+      this.navCtrl.push("ProdutoDetailPage", {produto_id : produto_id});
     }  
    }

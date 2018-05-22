@@ -39,5 +39,8 @@ loadImageUrls() {
          },
          error => {});
      }
+    }
+    showDetails(){
+      this.navCtrl.push("ProdutoDetailPage");
     }  
    }

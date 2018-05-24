@@ -62,6 +62,10 @@ public produtoService : ProdutoService) {
     goOn() {
       this.navCtrl.setRoot('CategoriasPage');
     }
+
+    checkout(){
+      this.navCtrl.push('PickAddressPage');
+    }
   }
 
 

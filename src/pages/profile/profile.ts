@@ -5,7 +5,6 @@ import { API_CONFIG } from '../../config/api.config';
 import { ClienteDTO } from '../../models/clinte.dto';
 import { StorageService } from '../../services/storage.services';
 import { CameraOptions, Camera } from '@ionic-native/camera';
-
 @IonicPage()
 @Component({
   selector: 'page-profile',
@@ -14,18 +13,22 @@ import { CameraOptions, Camera } from '@ionic-native/camera';
 export class ProfilePage {
 
   cliente: ClienteDTO;
-  picture : string;
-  cameraON : boolean = false;
+  picture: string;
+  cameraOn: boolean = false;
 
   constructor(
     public navCtrl: NavController, 
     public navParams: NavParams,
     public storage: StorageService,
     public clienteService: ClienteService,
-  public camera : Camera ) {
+    public camera: Camera) {
   }
 
   ionViewDidLoad() {
+    this.loadData();
+  }
+
+  loadData() {
     let localUser = this.storage.getLocalUser();
     if (localUser && localUser.email) {
       this.clienteService.findByEmail(localUser.email)
@@ -41,19 +44,21 @@ export class ProfilePage {
     }
     else {
       this.navCtrl.setRoot('HomePage');
-    }
+    }    
   }
 
   getImageIfExists() {
     this.clienteService.getImageFromBucket(this.cliente.id)
     .subscribe(response => {
-      this.cliente.imageURL = `${API_CONFIG.buckectBaseUrl}/cp${this.cliente.id}.jpg`;
+      this.cliente.imageUrl = `${API_CONFIG.buckectBaseUrl}/cp${this.cliente.id}.jpg`;
     },
     error => {});
   }
 
-  getCameraPicture(){
-     this.cameraON = true;
+  getCameraPicture() {
+
+    this.cameraOn = true;
+
     const options: CameraOptions = {
       quality: 100,
       destinationType: this.camera.DestinationType.DATA_URL,
@@ -62,13 +67,23 @@ export class ProfilePage {
     }
     
     this.camera.getPicture(options).then((imageData) => {
-     // imageData is either a base64 encoded string or a file URI
-     // If it's base64:
      this.picture = 'data:image/png;base64,' + imageData;
-     
-     this.cameraON = false;
+     this.cameraOn = false;
     }, (err) => {
-     // Handle error
     });
+  }
+
+  sendPicture() {
+    this.clienteService.uploadPicture(this.picture)
+      .subscribe(response => {
+        this.picture = null;
+        this.loadData();
+      },
+      error => {
+      });
+  }
+
+  cancel() {
+    this.picture = null;
   }
 }
